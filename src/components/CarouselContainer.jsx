@@ -18,11 +18,10 @@ export function CarouselContainer() {
             .catch(err => console.error(err));
     }, []);
 
-    // Fetch para obtener películas por género
     useEffect(() => {
         if (genres.length === 0) return;
 
-        const uniqueMovieIds = new Set(); // Set para almacenar IDs únicos
+        const uniqueMovieIds = new Set(); 
 
         const fetchMoviesByGenre = async () => {
             for (const g of genres) {
@@ -30,10 +29,9 @@ export function CarouselContainer() {
                 const data = await res.json();
                 
                 data.results.forEach(movie => {
-                    const prevSize = uniqueMovieIds.size; // Tamaño antes de añadir
-                    uniqueMovieIds.add(movie.id); // Intenta añadir el ID
+                    const prevSize = uniqueMovieIds.size; 
+                    uniqueMovieIds.add(movie.id); 
 
-                    // Si el tamaño ha cambiado, significa que se añadió con éxito
                     if (uniqueMovieIds.size > prevSize) {
                         setMovies(prevMovies => [...prevMovies, movie]);
                     }

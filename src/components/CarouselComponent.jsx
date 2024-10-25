@@ -4,8 +4,14 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-
-export function CarouselComponent({ genre , movies }) {
+export function CarouselComponent({ genre , movies  , handleLoadMore }) {
+    const [slidesNumber , setSlidesNumber] = useState(0)
+    const handleInc = () => {
+        setSlidesNumber( slidesNumber + 1 )
+    }
+    useEffect(()=>{
+        console.log(slidesNumber)
+    },[slidesNumber])
     const IMG_URL = "https://image.tmdb.org/t/p/w300"
     return (
         <>
@@ -22,8 +28,8 @@ export function CarouselComponent({ genre , movies }) {
                         grabCursor={true}
                     >
                         {movies.map((m) => (
-                            <SwiperSlide key={`${m.id}-${genre.id}`}>
-                                <img src={IMG_URL + m.poster_path} alt={m.name} />
+                            <SwiperSlide key={m.id} >
+                                <img src={IMG_URL + m.poster_path} alt={m.name} onLoad={()=> handleInc()} />
                             </SwiperSlide>
                         ))}
                     </Swiper>
