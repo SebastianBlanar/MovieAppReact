@@ -1,44 +1,55 @@
-import { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-export function CarouselComponent({ genre , movies  , handleLoadMore }) {
-    const [slidesNumber , setSlidesNumber] = useState(0)
-    const handleInc = () => {
-        setSlidesNumber( slidesNumber + 1 )
-    }
-    useEffect(()=>{
-        console.log(slidesNumber)
-    },[slidesNumber])
-    const IMG_URL = "https://image.tmdb.org/t/p/w300"
+export function CarouselComponent({ genre, movies }) {
+    const IMG_URL = "https://image.tmdb.org/t/p/w500";
+    
     return (
         <>
             {movies.length > 0 ? (
-                <div>
-                    <h2 className='text-center text-white'>{genre.name}</h2>
+                <div className="my-8">
+                    <h2 className="text-left text-white text-3xl font-bold mb-4">{genre.name}</h2> 
                     <Swiper
-                        spaceBetween={1}
-                        slidesPerView={6}
+                        spaceBetween={15} 
+                        slidesPerView={6} 
                         slidesPerGroup={1}
-                        navigation
-                        pagination={{ clickable: true }}
+                        pagination={{ clickable: false }}
                         loop={false}
                         grabCursor={true}
+                        className="rounded-lg overflow-visible"
+                        breakpoints={{
+                            320: { 
+                                slidesPerView: 2,
+                                spaceBetween: 10
+                            },
+                            640: { 
+                                slidesPerView: 3,
+                                spaceBetween: 12
+                            },
+                            1024: { 
+                                slidesPerView: 6,
+                                spaceBetween: 15
+                            },
+                        }}
                     >
                         {movies.map((m) => (
-                            <SwiperSlide key={m.id} >
-                                <img src={IMG_URL + m.poster_path} alt={m.name} onLoad={()=> handleInc()} />
+                            <SwiperSlide key={m.id} className="flex justify-center">
+                                <div className="relative group overflow-visible">
+                                    <img 
+                                        src={IMG_URL + m.poster_path} 
+                                        alt={m.title} 
+                                        className="rounded-lg shadow-lg transition-transform duration-500 ease-in-out transform group-hover:scale-105 group-hover:border-4 group-hover:border-white" 
+                                    />
+                                </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
             ) : (
-                <p>Cargando...</p>
+                <p className="text-center text-white">Cargando...</p>
             )}
         </>
     );
-    
-};
-
+}

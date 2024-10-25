@@ -4,7 +4,7 @@ import { CarouselContainer } from "../../components/CarouselContainer";
 export function Home(){
     return (
         <main>
-            {/* <BannerComponent /> */}
+            <BannerComponent />
             <CarouselContainer />
         </main>
     )

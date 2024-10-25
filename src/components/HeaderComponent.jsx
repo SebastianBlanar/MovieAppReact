@@ -1,6 +1,6 @@
 export function HeaderComponent() {
     return (
-        <header className="py-3 px-10 flex items-center fixed top-0 w-full justify-between flex-wrap z-10 bg-custom-gradient">
+        <header className="py-3 px-10 flex items-center md:fixed top-0 w-full justify-between flex-wrap z-50 bg-custom-gradient">
             <div className="flex flex-grow basis-0">
                 <a href="#">
                     <img src="/img/max-logo.webp" alt="Logo" />

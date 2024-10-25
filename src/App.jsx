@@ -4,6 +4,8 @@ import { BrowserRouter, Routes , Route } from 'react-router-dom'
 import { HeaderComponent } from './components/HeaderComponent'
 import { Home } from './pages/Home/Home'
 import { BannerComponent } from './components/BannerComponent'
+import { Details } from './pages/details/Details'
+
 function App() {
   const [count, setCount] = useState(0)
 

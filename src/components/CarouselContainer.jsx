@@ -8,6 +8,7 @@ export function CarouselContainer() {
 
     const [movies, setMovies] = useState([]);
     const [genres, setGenres] = useState([]);
+    const [movieMatrix, setMovieMatrix] = useState([]); 
 
     useEffect(() => {
         fetch(GENRES_URL)
@@ -22,6 +23,7 @@ export function CarouselContainer() {
         if (genres.length === 0) return;
 
         const uniqueMovieIds = new Set(); 
+        const uniqueMovies = new Set(); 
 
         const fetchMoviesByGenre = async () => {
             for (const g of genres) {
@@ -33,26 +35,53 @@ export function CarouselContainer() {
                     uniqueMovieIds.add(movie.id); 
 
                     if (uniqueMovieIds.size > prevSize) {
-                        setMovies(prevMovies => [...prevMovies, movie]);
+                        uniqueMovies.add(movie);
                     }
                 });
             }
+            setMovies(Array.from(uniqueMovies)); 
         };
 
         fetchMoviesByGenre().catch(e => console.error(e));
+        
     }, [genres]);
 
     useEffect(() => {
-        console.log(movies);
+        if (movies.length > 0) {
+            const sortedMovies = sortMoviesByGenre(); 
+            setMovieMatrix(sortedMovies); 
+        }
     }, [movies]);
+
+    function sortMoviesByGenre() {
+        const movieMatrix = [];
+        for (let i = 0; i < genres.length; i++) {
+            movieMatrix[i] = [];
+        }        
+        
+        outerloop: for(let j = 0; j < movies.length; j++) {
+            for(let i = 0; i < genres.length; i++) {
+                if (movieMatrix[i].length === 10) {
+                    continue;
+                }
+                for(let categoryId of movies[j].genre_ids) {
+                    if (categoryId === genres[i].id) {
+                        movieMatrix[i].push(movies[j]);
+                        continue outerloop;
+                    }
+                }
+            }  
+        }
+        return movieMatrix;
+    }
 
     return (
         <section className="p-12">
-            {genres.map((g) => (
+            {movies.length != 0 && movieMatrix.map((moviesArray, i) => (
                 <CarouselComponent 
-                    key={g.id}  
-                    genre={g} 
-                    movies={movies.filter(m => m.genre_ids[0] == g.id)} 
+                    key={genres[i].id}  
+                    genre={genres[i]} 
+                    movies={moviesArray} 
                 />
             ))}
         </section>
