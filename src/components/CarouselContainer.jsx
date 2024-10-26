@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { CarouselComponent } from "./CarouselComponent";
 
 export function CarouselContainer() {
-    const API_KEY = "api_key=1f5958ade9bb88f8352b23189296f880";
-    const GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?" + API_KEY;
-    const MOVIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/movie?${API_KEY}&with_genres=`;
+    const API_KEY = import.meta.env.VITE_API_KEY;
+    const GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?" + "api_key=" + API_KEY;
+    const MOVIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=`;
 
     const [movies, setMovies] = useState([]);
     const [genres, setGenres] = useState([]);

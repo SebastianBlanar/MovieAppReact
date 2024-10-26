@@ -3,8 +3,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export function BannerComponent() {
-    const API_KEY = "api_key=1f5958ade9bb88f8352b23189296f880";
-    const TMDB_POPULAR_MOVIES_URL = "https://api.themoviedb.org/3/movie/popular?" + API_KEY;
+    const API_KEY = import.meta.env.VITE_API_KEY;
+
+    const TMDB_POPULAR_MOVIES_URL = "https://api.themoviedb.org/3/movie/popular?" + "api_key=" + API_KEY;
     const IMG_URL = "https://image.tmdb.org/t/p/original"
 
     const [movies, setMovies] = useState([])

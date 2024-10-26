@@ -3,14 +3,15 @@ import { FaPlus } from "react-icons/fa";
 import { useParams } from 'react-router-dom';
 
 export function Details() {
-    const API_KEY = "api_key=1f5958ade9bb88f8352b23189296f880";
+    const API_KEY = import.meta.env.VITE_API_KEY;
+    console.log(API_KEY)
     const IMG_URL = "https://image.tmdb.org/t/p/original";
     const { movieId } = useParams()
     const [movie, setMovie] = useState(null);
 
     const BASE_URL = "https://api.themoviedb.org/3/movie/"
-    const MOVIE_DETAILS_URL = BASE_URL + movieId + "?" + API_KEY
-    const VIDEOS_URL =  BASE_URL + movieId + "/videos" + "?" + API_KEY
+    const MOVIE_DETAILS_URL = BASE_URL + movieId + "?" + "api_key=" + API_KEY
+    const VIDEOS_URL =  BASE_URL + movieId + "/videos" + "?" + "api_key=" + API_KEY
 
     const [ trailerURL, setTrailerURL ] = useState("")
 
