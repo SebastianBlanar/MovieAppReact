@@ -7,7 +7,6 @@ import { BannerComponent } from './components/BannerComponent'
 import { Details } from './pages/details/Details'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
@@ -16,6 +15,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home/>} />
+          <Route path="/movie/:movieId" element={<Details/>}/>
         </Routes>
 
       </BrowserRouter>

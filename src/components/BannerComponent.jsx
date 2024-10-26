@@ -1,5 +1,6 @@
 import { Carousel } from "flowbite-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export function BannerComponent() {
     const API_KEY = "api_key=1f5958ade9bb88f8352b23189296f880";
@@ -30,11 +31,11 @@ export function BannerComponent() {
                             <h2 className="text-2xl md:text-3xl text-white font-bold">{m.title}</h2>
                             <p className="text-white mt-2 max-w-2xl">{m.release_date.slice(0, 4)}</p>
                             <p className="text-white mt-2 max-w-2xl text-ellipsis line-clamp-2 md:line-clamp-3">{m.overview}</p>
-                            <button className="mt-2 mb-4 mx-auto md:mx-0 h-10 w-36 sm:h-8 sm:w-20 md:h-10 md:w-28 lg:h-12 lg:w-32 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors duration-300">
-                                Go to the movie
-                            </button>
-
-
+                            <Link to={`movie/${m.id}`}>
+                                <button className="mt-2 mb-4 mx-auto md:mx-0 h-10 w-36 sm:h-8 sm:w-20 md:h-10 md:w-28 lg:h-12 lg:w-32 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors duration-300">
+                                    Go to the movie
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 ))}

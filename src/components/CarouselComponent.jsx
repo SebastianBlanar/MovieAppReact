@@ -2,6 +2,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { Link } from 'react-router-dom';
 
 export function CarouselComponent({ genre, movies }) {
     const IMG_URL = "https://image.tmdb.org/t/p/w500";
@@ -36,13 +37,15 @@ export function CarouselComponent({ genre, movies }) {
                     >
                         {movies.map((m) => (
                             <SwiperSlide key={m.id} className="flex justify-center">
-                                <div className="relative group overflow-visible">
-                                    <img 
-                                        src={IMG_URL + m.poster_path} 
-                                        alt={m.title} 
-                                        className="rounded-lg shadow-lg transition-transform duration-500 ease-in-out transform group-hover:scale-105 group-hover:border-4 group-hover:border-white" 
-                                    />
-                                </div>
+                                <Link to={`/movie/${m.id}`}>
+                                    <div className="relative group overflow-visible">
+                                        <img 
+                                            src={IMG_URL + m.poster_path} 
+                                            alt={m.title} 
+                                            className="rounded-lg shadow-lg transition-transform duration-500 ease-in-out transform group-hover:scale-105 group-hover:border-4 group-hover:border-white" 
+                                        />
+                                    </div>
+                                </Link>
                             </SwiperSlide>
                         ))}
                     </Swiper>

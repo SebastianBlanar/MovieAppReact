@@ -1,19 +1,36 @@
 import { useEffect, useState } from 'react';
+import { FaPlus } from "react-icons/fa";
+import { useParams } from 'react-router-dom';
 
-export function Details({ movieId }) {
+export function Details() {
     const API_KEY = "api_key=1f5958ade9bb88f8352b23189296f880";
-    const MOVIE_DETAILS_URL = `https://api.themoviedb.org/3/movie/${movieId}?${API_KEY}`;
     const IMG_URL = "https://image.tmdb.org/t/p/original";
-    
+    const { movieId } = useParams()
     const [movie, setMovie] = useState(null);
-    useParams
+
+    const BASE_URL = "https://api.themoviedb.org/3/movie/"
+    const MOVIE_DETAILS_URL = BASE_URL + movieId + "?" + API_KEY
+    const VIDEOS_URL =  BASE_URL + movieId + "/videos" + "?" + API_KEY
+
+    const [ trailerURL, setTrailerURL ] = useState("")
 
     useEffect(() => {
         fetch(MOVIE_DETAILS_URL)
             .then(res => res.json())
-            .then(data => setMovie(data.results))
+            .then(data => setMovie(data))
             .catch(err => console.error(err));
-    }, [movieId]);
+    }, []);
+
+    useEffect(()=>{
+        const fetchTrailer = async () => {
+            const results = await fetch(VIDEOS_URL)
+            const data = await results.json()
+
+            const trailer = data.results.find( video => video.type == "Trailer" )
+            trailer && setTrailerURL("https://www.youtube.com/watch?v=" + trailer.key)
+        }
+        fetchTrailer()
+    },[movieId])
 
     if (!movie) return <p>Cargando...</p>;
 
@@ -32,13 +49,33 @@ export function Details({ movieId }) {
                 <p className="text-white mt-2 max-w-2xl line-clamp-3">{movie.overview}</p>
 
                 <div className="flex mt-4 space-x-4">
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                        Watch Trailer
+                    <button 
+                        className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                        onClick={() => {
+                            const movieName = encodeURIComponent(movie.title); // Codifica el título para URL
+                            window.open(`https://soaper.tv/search.html?keyword=${movieName}`, "_blank");
+                        }}
+                    >
+                        Search on Soaper.tv
                     </button>
+                    { trailerURL != "" ? (
+                        <a href={trailerURL} target="_blank" rel="noopener noreferrer">
+                            <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                                Watch Trailer
+                            </button> 
+                        </a>
+                        ) : (
+                            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors">
+                            Trailer unavailable
+                        </button>
+                        )
+                    }
+                    
                     <button className="flex items-center space-x-2 text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition-colors">
-                        <img src="/img/heart-icon.svg" alt="Add to Wishlist" className="h-5" />
+                        <FaPlus className="h-5" />
                         <span>Add to Wishlist</span>
                     </button>
+
                 </div>
             </div>
         </div>
