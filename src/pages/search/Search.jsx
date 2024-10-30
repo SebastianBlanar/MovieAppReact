@@ -5,16 +5,18 @@ import { MovieCard } from '../../components/MovieCard';
 
 export function Search() {
     const MOVIE_SEARCH_URL = "https://api.themoviedb.org/3/search/movie";
+    const SERIES_SEARCH_URL = "https://api.themoviedb.org/3/search/tv";
     const API_KEY = import.meta.env.VITE_API_KEY;
-    
-
+    const POPULAR_SERIES_URL = "https://api.themoviedb.org/3/tv/popular" + "?api_key=" + API_KEY + "&page="
     const POPULAR_MOVIES_URL = "https://api.themoviedb.org/3/discover/movie" + "?api_key=" + API_KEY + "&sort_by=popularity.desc&include_adult=false&vote_average.gte=7&certification_country=DE&certification.lte=FSK 16&page="
+
     const [query, setQuery] = useState("");
     const [movies, setMovies] = useState([]);
+    const [series, setSeries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-async function fetchMovies(url){
+async function fetchContent(url){
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Error en la búsqueda');
@@ -28,14 +30,15 @@ async function fetchMovies(url){
         if (!searchQuery){
             try {
                 const urls = [
-                    POPULAR_MOVIES_URL + "4",
+                    POPULAR_SERIES_URL + "2",
                     POPULAR_MOVIES_URL + "3",
-                    POPULAR_MOVIES_URL + "2",
-                    POPULAR_MOVIES_URL + "1"
+                    POPULAR_SERIES_URL + "1",
+                    POPULAR_MOVIES_URL + "2"
                 ]
                 const responses = await Promise.all(urls.map((url)=>fetch(url)))
                 const data = await Promise.all(responses.map(res => res.json()))
-                setMovies([...data[0].results, ...data[1].results, ...data[2].results,...data[3].results] || [])
+                setMovies([ ...data[1].results ,...data[3].results] || [])
+                setSeries(...data[0].results, ...data[2].results || [])
             } catch (err){
                 setError(err.message)
             } finally {
@@ -43,15 +46,21 @@ async function fetchMovies(url){
             }
         } else {
             try {
-                const data = await fetchMovies(`${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&query=${searchQuery}`)
-                if(data.total_pages > 1){
-                    const newData = await fetchMovies(`${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&page=2&query=${searchQuery}`)
-                    setMovies([...data.results , ...newData.results] || [])
+                const urls = [
+                    `${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&query=${searchQuery}&page=`,
+                    `${SERIES_SEARCH_URL}?api_key=${API_KEY}&query=${searchQuery}&page=`
+                ]
+                const data = await Promise.all(urls.map((url)=>fetchContent(url + "1")))
+                if(data[0].total_pages > 1 && data[1].total_pages > 1){
+                    const newData = await Promise.all(urls.map(url => fetchContent(url + "2")))
+                    setMovies([...data[0].results , ...newData[0].results ] || [])
+                    setSeries([...data[1].results , ...newData[1].results ] || [])
                 } else {
-                    setMovies(data.results || []);
+                    setMovies(data[0].results || []);
+                    setSeries(data[1].results || []);
                 }
             } catch (err) {
-                setError(err.message);
+                setError(err.message);  
             } finally {
                 setLoading(false);
             }
