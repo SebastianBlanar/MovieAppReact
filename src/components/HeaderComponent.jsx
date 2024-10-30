@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
+
 export function HeaderComponent() {
-    return (
-        
+    return ( 
         <header className="py-3 px-10 flex items-center md:fixed top-0 w-full justify-between flex-wrap z-50 bg-custom-gradient">
             <div className="flex flex-grow basis-0">
                 <a href="/">
@@ -20,9 +22,9 @@ export function HeaderComponent() {
             <nav className="order-2 md:order-3 flex flex-grow justify-end basis-0">
                 <ul className="flex text-sm [&>li>a]:inline-block [&>li>a]:px-4 [&>li>a]:font-medium [&>li>a]:py-2">
                     <li>
-                        <a href="#">
+                        <Link to="/search/">
                             <img src="/img/lupa.webp" alt="Buscar" />
-                        </a>
+                        </Link>
                     </li>
                     <li>
                         <a href="#">

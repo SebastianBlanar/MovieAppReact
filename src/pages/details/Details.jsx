@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 
 export function Details() {
     const API_KEY = import.meta.env.VITE_API_KEY;
-    console.log(API_KEY)
     const IMG_URL = "https://image.tmdb.org/t/p/original";
     const { movieId } = useParams()
     const [movie, setMovie] = useState(null);
@@ -12,10 +11,11 @@ export function Details() {
     const BASE_URL = "https://api.themoviedb.org/3/movie/"
     const MOVIE_DETAILS_URL = BASE_URL + movieId + "?" + "api_key=" + API_KEY
     const VIDEOS_URL =  BASE_URL + movieId + "/videos" + "?" + "api_key=" + API_KEY
-
+    
     const [ trailerURL, setTrailerURL ] = useState("")
 
     useEffect(() => {
+        console.log(MOVIE_DETAILS_URL)
         fetch(MOVIE_DETAILS_URL)
             .then(res => res.json())
             .then(data => setMovie(data))
@@ -33,7 +33,9 @@ export function Details() {
         fetchTrailer()
     },[movieId])
 
-    if (!movie) return <p>Cargando...</p>;
+
+
+    if (movie == null) return <p className='text-white text-center'>Cargando...</p>;
 
     return (
         <div className="relative h-[95vh] min-h-[450px] bg-custom-gradient">
@@ -53,7 +55,7 @@ export function Details() {
                     <button 
                         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
                         onClick={() => {
-                            const movieName = encodeURIComponent(movie.title); // Codifica el título para URL
+                            const movieName = encodeURIComponent(movie.title); 
                             window.open(`https://soaper.tv/search.html?keyword=${movieName}`, "_blank");
                         }}
                     >
