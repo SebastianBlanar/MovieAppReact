@@ -6,6 +6,7 @@ import { Home } from './pages/Home/Home'
 import { BannerComponent } from './components/BannerComponent'
 import { Details } from './pages/details/Details'
 import { Search } from './pages/search/Search'
+import { CarouselContainer } from './components/CarouselContainer'
 
 function App() {
 
@@ -15,6 +16,9 @@ function App() {
         <HeaderComponent />
 
         <Routes>
+          <Route path="/" element={<Home/>} />
+          <Route path="/movies/" element={<CarouselContainer section="movies"/>} />
+          <Route path="/series/" element={<CarouselContainer section="series"/>} />
           <Route path="/" element={<Home/>} />
           <Route path="/:type/:id" element={<Details />} />
           <Route path="/search/" element={<Search/>}/>

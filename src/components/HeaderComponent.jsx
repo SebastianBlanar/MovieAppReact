@@ -13,9 +13,9 @@ export function HeaderComponent() {
             <nav className="order-3 md:order-2">
                 <ul className="text-xs sm:text-sm [&>li>a]:inline-block [&>li>a]:px-2 md:[&>li>a]:px-4 [&>li>a]:font-medium [&>li>a]:py-2 text-white flex">
                     <li><a href="/">INICIO</a></li>
-                    <li><a href="#">SERIES</a></li>
+                    <li><a href="/series/">SERIES</a></li>
                     <li><a href="#">TENDENCIAS</a></li>
-                    <li><a href="#">PELICULAS</a></li>
+                    <li><a href="/movies/">PELICULAS</a></li>
                 </ul>
             </nav>
 

@@ -5,7 +5,7 @@ export function Home(){
     return (
         <main>
             <BannerComponent />
-            <CarouselContainer />
+            <CarouselContainer section="home" />
         </main>
     )
 }

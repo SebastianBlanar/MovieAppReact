@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CarouselComponent } from "./CarouselComponent";
 
-export function CarouselContainer() {
+export function CarouselContainer( { section } ) {
     const API_KEY = import.meta.env.VITE_API_KEY;
     const GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?" + "api_key=" + API_KEY;
     const MOVIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=`;
@@ -21,6 +21,7 @@ export function CarouselContainer() {
     }, []);
 
     useEffect(() => {
+        console.log(genres)
         if (genres.length === 0) return;
 
         const uniqueContentIds = new Set();
@@ -34,7 +35,6 @@ export function CarouselContainer() {
             const fetchPromises = genres.map(genre => {
                 const urlPromises = urls.flatMap((url) =>
                     pages.map(async (page) => {
-                        const isMovie = url.includes("movie");
                         const path = `${url}${genre.id}&page=${page}`;
 
                         const res = await fetch(path);
@@ -44,7 +44,8 @@ export function CarouselContainer() {
                             const prevSize = uniqueContentIds.size;
                             uniqueContentIds.add(content.id);
                             if (uniqueContentIds.size > prevSize) {
-                                uniqueContent.add({ ...content, isMovie });
+                                const isMovie = !!content.release_date; 
+                                uniqueContent.add({ ...content, isMovie }); 
                             }
                         });
                     })
@@ -57,13 +58,17 @@ export function CarouselContainer() {
             setContent(Array.from(uniqueContent).sort(() => Math.random() - 0.5));
         };
 
-        fetchContentByGenre(genres, [MOVIES_BY_GENRE_URL, SERIES_BY_GENRE_URL])
+        let urls;
+        if(section == "home") urls = [MOVIES_BY_GENRE_URL, SERIES_BY_GENRE_URL] 
+        else if (section == "movies") urls = [MOVIES_BY_GENRE_URL] 
+        else if (section == "series") urls = [SERIES_BY_GENRE_URL]
+        
+        fetchContentByGenre(genres, urls)
             .catch(e => console.error(e));
     }, [genres]);
 
 
     useEffect(() => {
-        console.log(content)
         if (content.length > 0) {
             const sortedcontent = sortContentByGenre();
             setContentMatrix(sortedcontent);
