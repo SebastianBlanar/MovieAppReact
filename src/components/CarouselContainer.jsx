@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 import { CarouselComponent } from "./CarouselComponent";
 
 export function CarouselContainer() {
     const API_KEY = import.meta.env.VITE_API_KEY;
     const GENRES_URL = "https://api.themoviedb.org/3/genre/movie/list?" + "api_key=" + API_KEY;
     const MOVIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=`;
+    const SERIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&with_genres=`;
 
-    const [movies, setMovies] = useState([]);
+    const [content, setContent] = useState([]);
     const [genres, setGenres] = useState([]);
-    const [movieMatrix, setMovieMatrix] = useState([]); 
+    const [contentMatrix, setContentMatrix] = useState([]);
 
     useEffect(() => {
         fetch(GENRES_URL)
@@ -22,66 +23,82 @@ export function CarouselContainer() {
     useEffect(() => {
         if (genres.length === 0) return;
 
-        const uniqueMovieIds = new Set(); 
-        const uniqueMovies = new Set(); 
+        const uniqueContentIds = new Set();
+        const uniqueContent = new Set();
+        const page1 = Math.floor(Math.random() * 3) + 1;   
+        const page2 = Math.floor(Math.random() * 3) + 4;   
+        const pages = [page1, page2];
 
-        const fetchMoviesByGenre = async () => {
-            for (const g of genres) {
-                const res = await fetch(MOVIES_BY_GENRE_URL + g.id);
-                const data = await res.json();
-                
-                data.results.forEach(movie => {
-                    const prevSize = uniqueMovieIds.size; 
-                    uniqueMovieIds.add(movie.id); 
 
-                    if (uniqueMovieIds.size > prevSize) {
-                        uniqueMovies.add(movie);
-                    }
-                });
-            }
-            setMovies(Array.from(uniqueMovies)); 
+        const fetchContentByGenre = async (genres, urls) => {
+            const fetchPromises = genres.map(genre => {
+                const urlPromises = urls.flatMap((url) =>
+                    pages.map(async (page) => {
+                        const isMovie = url.includes("movie");
+                        const path = `${url}${genre.id}&page=${page}`;
+
+                        const res = await fetch(path);
+                        const data = await res.json();
+
+                        data.results.forEach(content => {
+                            const prevSize = uniqueContentIds.size;
+                            uniqueContentIds.add(content.id);
+                            if (uniqueContentIds.size > prevSize) {
+                                uniqueContent.add({ ...content, isMovie });
+                            }
+                        });
+                    })
+                );
+
+                return Promise.all(urlPromises);
+            });
+
+            await Promise.all(fetchPromises);
+            setContent(Array.from(uniqueContent).sort(() => Math.random() - 0.5));
         };
 
-        fetchMoviesByGenre().catch(e => console.error(e));
-        
+        fetchContentByGenre(genres, [MOVIES_BY_GENRE_URL, SERIES_BY_GENRE_URL])
+            .catch(e => console.error(e));
     }, [genres]);
 
-    useEffect(() => {
-        if (movies.length > 0) {
-            const sortedMovies = sortMoviesByGenre(); 
-            setMovieMatrix(sortedMovies); 
-        }
-    }, [movies]);
 
-    function sortMoviesByGenre() {
-        const movieMatrix = [];
+    useEffect(() => {
+        console.log(content)
+        if (content.length > 0) {
+            const sortedcontent = sortContentByGenre();
+            setContentMatrix(sortedcontent);
+        }
+    }, [content]);
+
+    function sortContentByGenre() {
+        const contentMatrix = [];
         for (let i = 0; i < genres.length; i++) {
-            movieMatrix[i] = [];
-        }        
-        
-        outerloop: for(let j = 0; j < movies.length; j++) {
-            for(let i = 0; i < genres.length; i++) {
-                if (movieMatrix[i].length === 10) {
+            contentMatrix[i] = [];
+        }
+
+        outerloop: for (let j = 0; j < content.length; j++) {
+            for (let i = 0; i < genres.length; i++) {
+                if (contentMatrix[i].length === 30) {
                     continue;
                 }
-                for(let categoryId of movies[j].genre_ids) {
+                for (let categoryId of content[j].genre_ids) {
                     if (categoryId === genres[i].id) {
-                        movieMatrix[i].push(movies[j]);
+                        contentMatrix[i].push(content[j]);
                         continue outerloop;
                     }
                 }
-            }  
+            }
         }
-        return movieMatrix;
+        return contentMatrix;
     }
 
     return (
         <section className="p-12">
-            {movies.length != 0 && movieMatrix.map((moviesArray, i) => (
-                <CarouselComponent 
-                    key={genres[i].id}  
-                    genre={genres[i]} 
-                    movies={moviesArray} 
+            {content.length != 0 && contentMatrix.map((contentArray, i) => (
+                <CarouselComponent
+                    key={genres[i].id}
+                    genre={genres[i]}
+                    content={contentArray}
                 />
             ))}
         </section>

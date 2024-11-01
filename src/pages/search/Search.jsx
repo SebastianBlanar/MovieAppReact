@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
-import { MovieCard } from '../../components/MovieCard';
+import { ContentCard } from '../../components/ContentCard';
 
 export function Search() {
     const MOVIE_SEARCH_URL = "https://api.themoviedb.org/3/search/movie";
@@ -10,13 +10,15 @@ export function Search() {
     const POPULAR_SERIES_URL = "https://api.themoviedb.org/3/tv/popular" + "?api_key=" + API_KEY + "&page="
     const POPULAR_MOVIES_URL = "https://api.themoviedb.org/3/discover/movie" + "?api_key=" + API_KEY + "&sort_by=popularity.desc&include_adult=false&vote_average.gte=7&certification_country=DE&certification.lte=FSK 16&page="
 
+    const FILTER_BY_GENRE_URL = "https://api.themoviedb.org/3/discover/tv?api_key=1f5958ade9bb88f8352b23189296f880&sort_by=popularity.desc&with_genres=80&page="
+
     const [query, setQuery] = useState("");
     const [movies, setMovies] = useState([]);
     const [series, setSeries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-async function fetchContent(url){
+    async function fetchContent(url) {
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Error en la búsqueda');
@@ -27,7 +29,7 @@ async function fetchContent(url){
     const handleSearch = async (searchQuery) => {
         setLoading(true);
         setError(null);
-        if (!searchQuery){
+        if (!searchQuery) {
             try {
                 const urls = [
                     POPULAR_SERIES_URL + "2",
@@ -35,11 +37,11 @@ async function fetchContent(url){
                     POPULAR_SERIES_URL + "1",
                     POPULAR_MOVIES_URL + "2"
                 ]
-                const responses = await Promise.all(urls.map((url)=>fetch(url)))
+                const responses = await Promise.all(urls.map((url) => fetch(url)))
                 const data = await Promise.all(responses.map(res => res.json()))
-                setMovies([ ...data[1].results ,...data[3].results] || [])
-                setSeries(...data[0].results, ...data[2].results || [])
-            } catch (err){
+                setMovies([...data[1].results, ...data[3].results] || [])
+                setSeries([...data[0].results, ...data[2].results] || [])
+            } catch (err) {
                 setError(err.message)
             } finally {
                 setLoading(false)
@@ -47,20 +49,20 @@ async function fetchContent(url){
         } else {
             try {
                 const urls = [
-                    `${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&query=${searchQuery}&page=`,
-                    `${SERIES_SEARCH_URL}?api_key=${API_KEY}&query=${searchQuery}&page=`
-                ]
-                const data = await Promise.all(urls.map((url)=>fetchContent(url + "1")))
-                if(data[0].total_pages > 1 && data[1].total_pages > 1){
+                    `${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&query=${searchQuery}&sort_by=popularity.desc&page=`,
+                    `${SERIES_SEARCH_URL}?api_key=${API_KEY}&query=${searchQuery}&sort_by=popularity.desc&page=`
+                ];
+                const data = await Promise.all(urls.map((url) => fetchContent(url + "1")))
+                if (data[0].total_pages > 1 && data[1].total_pages > 1) {
                     const newData = await Promise.all(urls.map(url => fetchContent(url + "2")))
-                    setMovies([...data[0].results , ...newData[0].results ] || [])
-                    setSeries([...data[1].results , ...newData[1].results ] || [])
+                    setMovies([...data[0].results, ...newData[0].results] || [])
+                    setSeries([...data[1].results, ...newData[1].results] || [])
                 } else {
                     setMovies(data[0].results || []);
                     setSeries(data[1].results || []);
                 }
             } catch (err) {
-                setError(err.message);  
+                setError(err.message);
             } finally {
                 setLoading(false);
             }
@@ -70,7 +72,7 @@ async function fetchContent(url){
     useEffect(() => {
         const timer = setTimeout(() => {
             handleSearch(query);
-        }, 500); 
+        }, 500);
 
         return () => clearTimeout(timer);
     }, [query]);
@@ -87,7 +89,7 @@ async function fetchContent(url){
                         onChange={(event) => setQuery(event.target.value)}
                     />
                 </div>
-                <button 
+                <button
                     className="flex items-center py-3 px-10 text-[15px] font-medium bg-angled-blue-gradient rounded-lg shadow-md text-white transition duration-75 ease-in-out hover:shadow-lg hover:scale-110"
                     onClick={() => handleSearch(query)}
                 >
@@ -99,15 +101,15 @@ async function fetchContent(url){
             {loading && <p className="text-center mt-4">Cargando...</p>}
             {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-10 mt-10 p-10'>
-                {movies.length > 0 ? (
-                    movies.map((movie, i) => movie.poster_path && (
-                        <MovieCard key={i} movie={movie} />
-                    ))
-                ) : (
-                    <p className="text-center mt-4">No se encontraron resultados</p>
-                )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-10 mt-10 p-10">
+                {series.length > 0 && series.map((serie, i) => serie.poster_path && (
+                    <ContentCard key={`series-${i}`} content={serie} type="series" />
+                ))}
+                {movies.length > 0 && movies.map((movie, i) => movie.poster_path && (
+                    <ContentCard key={`movie-${i}`} content={movie} type="movie" />
+                ))}
             </div>
+
         </div>
     );
 }
