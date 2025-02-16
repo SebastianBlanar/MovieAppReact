@@ -7,6 +7,7 @@ import { Search } from './pages/search/Search'
 import { CarouselContainer } from './components/CarouselContainer'
 import { WishlistProvider } from './contexts/WishListContext'
 import { Wishlist } from './pages/wishlist/wishlist'
+import { CategoryPage } from './pages/category/CategoryPage'
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="/wishlist/" element={<Wishlist section="wishlist"/>} />
             <Route path="/" element={<Home/>} />
             <Route path="/:type/:id" element={<Details />} />
+            <Route path="/:category/" element={<CategoryPage />} />
             <Route path="/search/" element={<Search/>}/>
           </Routes>
         </WishlistProvider>

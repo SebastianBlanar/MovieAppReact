@@ -6,11 +6,12 @@ import { Link } from 'react-router-dom';
 
 export function CarouselComponent({ genreName, content }) {
     const IMG_URL = "https://image.tmdb.org/t/p/w500";
-    
     return (
         content.length > 0 && (
                 <div className="my-8">
-                    <h2 className="text-left text-white text-3xl font-bold mb-4">{genreName}</h2> 
+                    <Link to={`/${genreName.toLowerCase()}`}>
+                      <h2 className="text-left text-white text-3xl font-bold mb-4">{genreName}</h2> 
+                    </Link>
                     <Swiper
                         spaceBetween={15} 
                         slidesPerView={6} 

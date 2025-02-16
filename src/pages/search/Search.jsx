@@ -10,12 +10,6 @@ export function Search() {
     const POPULAR_SERIES_URL = "https://api.themoviedb.org/3/tv/popular" + "?api_key=" + API_KEY + "&page="
     const POPULAR_MOVIES_URL = "https://api.themoviedb.org/3/discover/movie" + "?api_key=" + API_KEY + "&sort_by=popularity.desc&include_adult=false&vote_average.gte=7&certification_country=DE&certification.lte=FSK 16&page="
 
-    //sin anime
-    const FILTER_BY_GENRE_URL = "https://api.themoviedb.org/3/discover/tv?api_key=1f5958ade9bb88f8352b23189296f880&sort_by=popularity.desc&without_genres=16&with_genres=";
-    //normal
-    // const FILTER_BY_GENRE_URL = "https://api.themoviedb.org/3/discover/tv?api_key=1f5958ade9bb88f8352b23189296f880&sort_by=popularity.desc&with_genres="
-    // /tv
-
     const [query, setQuery] = useState("");
     const [movies, setMovies] = useState([]);
     const [series, setSeries] = useState([]);
@@ -23,21 +17,7 @@ export function Search() {
     const [error, setError] = useState(null);
 
     const MOVIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=` 
-    const familyFriendlyUrls = [
-        FILTER_BY_GENRE_URL + "10759" + "&page=1",
-        FILTER_BY_GENRE_URL + "10759" + "&page=2",
-        FILTER_BY_GENRE_URL + "10759" + "&page=3",
-        FILTER_BY_GENRE_URL + "10759" + "&page=4",
-        FILTER_BY_GENRE_URL + "10759" + "&page=5",
-        FILTER_BY_GENRE_URL + "10759" + "&page=6",
-        FILTER_BY_GENRE_URL + "10759" + "&page=7",
-        FILTER_BY_GENRE_URL + "10759" + "&page=8",
-        FILTER_BY_GENRE_URL + "10759" + "&page=9",
-        FILTER_BY_GENRE_URL + "10759" + "&page=10",
-        FILTER_BY_GENRE_URL + "10759" + "&page=11",
-        FILTER_BY_GENRE_URL + "10759" + "&page=12"
-    ]
-
+ 
     async function fetchContent(url) {
         const response = await fetch(url);
         if (!response.ok) {
@@ -52,18 +32,15 @@ export function Search() {
         if (!searchQuery) {
             try {
                 const urls = [
-                    POPULAR_SERIES_URL + "2",
-                    POPULAR_MOVIES_URL + "3",
-                    POPULAR_SERIES_URL + "1",
-                    POPULAR_MOVIES_URL + "2"
+                  POPULAR_MOVIES_URL + "1",
+                  POPULAR_SERIES_URL + "1",
+                  POPULAR_MOVIES_URL + "2",
+                  POPULAR_SERIES_URL + "2"
                 ]
-                const responses = await Promise.all(familyFriendlyUrls.map((url) => fetch(url)))
+                const responses = await Promise.all(urls.map((url) => fetch(url)))
                 const data = await Promise.all(responses.map(res => res.json()))
-                const movies = data.flatMap(item => item.results);
-                // Solo de prueba para poder filtrar las que yo quiero, luego borrar el set series y dejar las 2 lineas comentadas
-                setSeries(movies || [])
-                // setMovies([...data[1].results, ...data[3].results] || [])
-                // setSeries([...data[0].results, ...data[2].results] || [])
+                setMovies([...data[0].results, ...data[2].results] || [])
+                setSeries([...data[1].results, ...data[3].results] || [])
             } catch (err) {
                 setError(err.message)
             } finally {

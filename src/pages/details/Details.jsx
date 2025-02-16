@@ -20,6 +20,8 @@ export function Details() {
 
     const [trailerURL, setTrailerURL] = useState("");
 
+    const searchContent = (contentName) => window.open(`https://soapertv.lol/filter?keyword=${contentName}`, "_blank");
+
     useEffect(() => {
         fetch(DETAILS_URL)
             .then(res => res.json())
@@ -63,10 +65,10 @@ export function Details() {
                         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
                         onClick={() => {
                             const contentName = encodeURIComponent(type === "movie" ? content.title : content.name);
-                            window.open(`https://soaper.tv/search.html?keyword=${contentName}`, "_blank");
+                            searchContent(contentName)
                         }}
                     >
-                        Search on Soaper.tv
+                        Search movie
                     </button>
                     {trailerURL ? (
                         <a href={trailerURL} target="_blank" rel="noopener noreferrer">

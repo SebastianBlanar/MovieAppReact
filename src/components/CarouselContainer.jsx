@@ -43,7 +43,7 @@ export function CarouselContainer({ section }) {
         };
 
         fetchGenres();
-    }, [section, MOVIE_GENRES_URL, SERIES_GENRES_URL,wishlist]);
+    }, [section, MOVIE_GENRES_URL, SERIES_GENRES_URL]);
 
     useEffect(() => {
         console.log(genres)
@@ -51,11 +51,10 @@ export function CarouselContainer({ section }) {
 
         const uniqueContentIds = new Set();
         const uniqueContent = new Set();
-        const page1 = 1 
-        // Math.floor(Math.random() * 3) + 1;
+        const page1 = Math.floor(Math.random() * 3) + 1;
         //1
-        const page2 = 2
-        //Math.floor(Math.random() * 3) + 2;
+        const page2 = Math.floor(Math.random() * 3) + 2; 
+        //2
         const pages = [page1, page2];
 
 
@@ -133,7 +132,6 @@ export function CarouselContainer({ section }) {
 
     return (
         <section className="p-12">
-            {wishlist.length != 0 && <CarouselComponent genreName={"Wishlist"} content={filteredWishlist} />}
             {content.length != 0 && contentMatrix.map((contentArray, i) => (
                 genres[i] && genres[i].name ? (
                     <CarouselComponent
@@ -143,6 +141,7 @@ export function CarouselContainer({ section }) {
                     />
                 ) : null
             ))}
+            {wishlist.length != 0 && <CarouselComponent genreName={"Wishlist"} content={filteredWishlist} />}
         </section>
     );
 }

@@ -7,7 +7,7 @@ export function Wishlist(){
   useEffect(()=>{
   },[wishlist])
   return (
-    <div className=" grid grid-cols-6 gap-4 mt-20"> 
+    <div className=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-10 mt-20 p-10"> 
       {wishlist.map((c,i) => {
         return <ContentCard key={i} content={c} type={c.original_title ? "movie" : "tv"} /> 
       })}
