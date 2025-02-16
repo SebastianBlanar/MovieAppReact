@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useContext } from 'react';
 import { FaPlus } from "react-icons/fa";
 import { useParams } from 'react-router-dom';
+import { WishlistContext } from '../../contexts/WishListContext';
 
 export function Details() {
     const API_KEY = import.meta.env.VITE_API_KEY;
@@ -8,6 +9,7 @@ export function Details() {
     const { type, id } = useParams(); 
 
     const [content, setContent] = useState(null);
+    const { wishlist, addContentToWishlist, removeContentFromWishlist } = useContext(WishlistContext) 
 
     const BASE_MOVIE_URL = "https://api.themoviedb.org/3/movie/";
     const BASE_TV_URL = "https://api.themoviedb.org/3/tv/";
@@ -78,10 +80,24 @@ export function Details() {
                         </button>
                     )}
                     
-                    <button className="flex items-center space-x-2 text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition-colors">
-                        <FaPlus className="h-5" />
-                        <span>Add to Wishlist</span>
-                    </button>
+                    {wishlist.some(c => c.id == id) ? (
+                        <button 
+                        className="flex items-center space-x-2 text-white border border-red-600 px-4 py-2 rounded hover:bg-white hover:text-black transition-colors"
+                        onClick={() => removeContentFromWishlist(id)}
+                        >
+                            <span>Remove from watchlist</span>
+                        </button>
+                    ) : (
+                        <button 
+                            className="flex items-center space-x-2 text-white border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition-colors"
+                            onClick={() => addContentToWishlist(content)}
+                        >
+                            <FaPlus className="h-5" />
+                            <span>Add to Wishlist</span>
+                        </button>
+                    )
+                    }
+                    
                 </div>
             </div>
         </div>

@@ -10,13 +10,33 @@ export function Search() {
     const POPULAR_SERIES_URL = "https://api.themoviedb.org/3/tv/popular" + "?api_key=" + API_KEY + "&page="
     const POPULAR_MOVIES_URL = "https://api.themoviedb.org/3/discover/movie" + "?api_key=" + API_KEY + "&sort_by=popularity.desc&include_adult=false&vote_average.gte=7&certification_country=DE&certification.lte=FSK 16&page="
 
-    const FILTER_BY_GENRE_URL = "https://api.themoviedb.org/3/discover/tv?api_key=1f5958ade9bb88f8352b23189296f880&sort_by=popularity.desc&with_genres=80&page="
+    //sin anime
+    const FILTER_BY_GENRE_URL = "https://api.themoviedb.org/3/discover/tv?api_key=1f5958ade9bb88f8352b23189296f880&sort_by=popularity.desc&without_genres=16&with_genres=";
+    //normal
+    // const FILTER_BY_GENRE_URL = "https://api.themoviedb.org/3/discover/tv?api_key=1f5958ade9bb88f8352b23189296f880&sort_by=popularity.desc&with_genres="
+    // /tv
 
     const [query, setQuery] = useState("");
     const [movies, setMovies] = useState([]);
     const [series, setSeries] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const MOVIES_BY_GENRE_URL = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=` 
+    const familyFriendlyUrls = [
+        FILTER_BY_GENRE_URL + "10759" + "&page=1",
+        FILTER_BY_GENRE_URL + "10759" + "&page=2",
+        FILTER_BY_GENRE_URL + "10759" + "&page=3",
+        FILTER_BY_GENRE_URL + "10759" + "&page=4",
+        FILTER_BY_GENRE_URL + "10759" + "&page=5",
+        FILTER_BY_GENRE_URL + "10759" + "&page=6",
+        FILTER_BY_GENRE_URL + "10759" + "&page=7",
+        FILTER_BY_GENRE_URL + "10759" + "&page=8",
+        FILTER_BY_GENRE_URL + "10759" + "&page=9",
+        FILTER_BY_GENRE_URL + "10759" + "&page=10",
+        FILTER_BY_GENRE_URL + "10759" + "&page=11",
+        FILTER_BY_GENRE_URL + "10759" + "&page=12"
+    ]
 
     async function fetchContent(url) {
         const response = await fetch(url);
@@ -37,35 +57,50 @@ export function Search() {
                     POPULAR_SERIES_URL + "1",
                     POPULAR_MOVIES_URL + "2"
                 ]
-                const responses = await Promise.all(urls.map((url) => fetch(url)))
+                const responses = await Promise.all(familyFriendlyUrls.map((url) => fetch(url)))
                 const data = await Promise.all(responses.map(res => res.json()))
-                setMovies([...data[1].results, ...data[3].results] || [])
-                setSeries([...data[0].results, ...data[2].results] || [])
+                const movies = data.flatMap(item => item.results);
+                // Solo de prueba para poder filtrar las que yo quiero, luego borrar el set series y dejar las 2 lineas comentadas
+                setSeries(movies || [])
+                // setMovies([...data[1].results, ...data[3].results] || [])
+                // setSeries([...data[0].results, ...data[2].results] || [])
             } catch (err) {
                 setError(err.message)
             } finally {
                 setLoading(false)
             }
         } else {
-            try {
-                const urls = [
-                    `${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&query=${searchQuery}&sort_by=popularity.desc&page=`,
-                    `${SERIES_SEARCH_URL}?api_key=${API_KEY}&query=${searchQuery}&sort_by=popularity.desc&page=`
-                ];
-                const data = await Promise.all(urls.map((url) => fetchContent(url + "1")))
-                if (data[0].total_pages > 1 && data[1].total_pages > 1) {
-                    const newData = await Promise.all(urls.map(url => fetchContent(url + "2")))
-                    setMovies([...data[0].results, ...newData[0].results] || [])
-                    setSeries([...data[1].results, ...newData[1].results] || [])
-                } else {
-                    setMovies(data[0].results || []);
-                    setSeries(data[1].results || []);
-                }
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
+            try { 
+              const urls = [
+                  `${MOVIE_SEARCH_URL}?api_key=${API_KEY}&certification_country=DE&certification.lte=FSK 16&query=${searchQuery}&sort_by=popularity.desc&page=`,
+                  `${SERIES_SEARCH_URL}?api_key=${API_KEY}&query=${searchQuery}&sort_by=popularity.desc&page=`
+              ];
+              
+              const data = await Promise.all(urls.map(url => fetchContent(url + "1")));
+          
+              let movies = data[0].results || [];
+              let series = data[1].results || [];
+          
+              if (data[0].total_pages > 1 && data[1].total_pages > 1) {
+                  const newData = await Promise.all(urls.map(url => fetchContent(url + "2")));
+          
+                  // Unimos los resultados y ordenamos por popularidad
+                  movies = [...movies, ...newData[0].results].sort((a, b) => b.popularity - a.popularity);
+                  series = [...series, ...newData[1].results].sort((a, b) => b.popularity - a.popularity);
+              } else {
+                  // Ordenamos directamente si no hay más páginas
+                  movies = movies.sort((a, b) => b.popularity - a.popularity);
+                  series = series.sort((a, b) => b.popularity - a.popularity);
+              }
+          
+              setMovies(movies);
+              setSeries(series);
+          } catch (err) {
+              setError(err.message);
+          } finally {
+              setLoading(false);
+          }
+        
         }
     };
 

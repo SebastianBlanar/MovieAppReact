@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-
+import { AccountComponent } from "./AccountComponent";
 
 export function HeaderComponent() {
     return ( 
@@ -13,9 +13,9 @@ export function HeaderComponent() {
             <nav className="order-3 md:order-2">
                 <ul className="text-xs sm:text-sm [&>li>a]:inline-block [&>li>a]:px-2 md:[&>li>a]:px-4 [&>li>a]:font-medium [&>li>a]:py-2 text-white flex">
                     <li><a href="/">INICIO</a></li>
-                    <li><a href="/series/">SERIES</a></li>
-                    <li><a href="#">TENDENCIAS</a></li>
-                    <li><a href="/movies/">PELICULAS</a></li>
+                    <li><Link to={"/series/"}>SERIES</Link></li>
+                    <li><a href="">TENDENCIAS</a></li>
+                    <li><Link to={"/movies/"}>PELICULAS</Link></li>
                 </ul>
             </nav>
 
@@ -27,14 +27,12 @@ export function HeaderComponent() {
                         </Link>
                     </li>
                     <li>
-                        <a href="#">
-                            <img src="/img/guardados.webp" alt="Guardados" />
-                        </a>
+                        <Link to={"/wishlist/"}>
+                          <img src="/img/guardados.webp" alt="Guardados" />
+                        </Link>
                     </li>
                     <li>
-                        <a href="#">
-                            <img src="/img/avatar_default.webp" alt="Avatar" />
-                        </a>
+                        <AccountComponent />
                     </li>
                 </ul>
             </nav>

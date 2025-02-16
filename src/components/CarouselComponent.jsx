@@ -4,13 +4,13 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Link } from 'react-router-dom';
 
-export function CarouselComponent({ genre, content }) {
+export function CarouselComponent({ genreName, content }) {
     const IMG_URL = "https://image.tmdb.org/t/p/w500";
     
     return (
         content.length > 0 && (
                 <div className="my-8">
-                    <h2 className="text-left text-white text-3xl font-bold mb-4">{genre.name}</h2> 
+                    <h2 className="text-left text-white text-3xl font-bold mb-4">{genreName}</h2> 
                     <Swiper
                         spaceBetween={15} 
                         slidesPerView={6} 
@@ -37,7 +37,7 @@ export function CarouselComponent({ genre, content }) {
                         {content.map((c) => (
                             c.poster_path && (
                             <SwiperSlide key={c.id} className="flex justify-center">
-                                <Link to={c.isMovie ? `/movie/${c.id}` : `/tv/${c.id}`}>
+                                <Link to={c.original_title ? `/movie/${c.id}` : `/tv/${c.id}`}>
                                     <div className="relative group overflow-visible">
                                         <img 
                                             src={IMG_URL + c.poster_path} 

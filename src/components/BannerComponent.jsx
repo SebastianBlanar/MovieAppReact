@@ -15,12 +15,13 @@ export function BannerComponent() {
             .then(res => res.json())
             .then(data => {
                 const shuffledMovies = data.results.sort(() => 0.5 - Math.random());
-                setMovies(shuffledMovies.slice(0, 6)); 
+                setMovies(shuffledMovies.slice(0,6)); 
             })
             .catch(err => console.error(err));
-    }, []);
+    }, [TMDB_POPULAR_MOVIES_URL]);
 
     return (
+        <>
         <div className="h-[40vh] min-h-[450px] md:h-[95vh] filter saturate-150 bg-custom-gradient">
             <Carousel>
                 {movies.map((m) => (
@@ -42,5 +43,6 @@ export function BannerComponent() {
                 ))}
             </Carousel>
         </div>
+        </>
     );
 }
